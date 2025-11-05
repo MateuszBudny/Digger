@@ -6,6 +6,8 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "DiggerWeaponComponent.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnToolDrop, ADiggerCharacter*, PickUpCharacter);
+
 class ADiggerCharacter;
 
 UCLASS(Blueprintable, BlueprintType, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -38,6 +40,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	class UInputAction* FireAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* DropToolAction;
+
 	/** Sets default values for this component's properties */
 	UDiggerWeaponComponent();
 
@@ -49,6 +54,13 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Weapon")
 	void Fire();
 
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	void DropCurrentTool();
+
+	/** Delegate to whom anyone can subscribe to receive this event */
+	UPROPERTY(BlueprintAssignable, Category = "Interaction")
+	FOnToolDrop OnToolDrop;
+
 protected:
 	/** Ends gameplay for this component. */
 	UFUNCTION()
@@ -57,4 +69,7 @@ protected:
 private:
 	/** The Character holding this weapon*/
 	ADiggerCharacter* Character;
+
+	APlayerController* GetAPlayerController();
+	bool IsCharacterHoldingItem();
 };
